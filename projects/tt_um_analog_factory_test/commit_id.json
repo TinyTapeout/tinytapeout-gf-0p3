@@ -1,0 +1,9 @@
+{
+  "app": "custom_gds action",
+  "repo": "https://github.com/smunaut/ttgf_analog_factory_test",
+  "commit": "c6ca27c7480d7f10356a02ddf8a46a94e7057fa7",
+  "workflow_url": "https://github.com/smunaut/ttgf_analog_factory_test/actions/runs/27201509310",
+  "project_id": 5122,
+  "sort_id": 1781003742209,
+  "analog": true
+}
