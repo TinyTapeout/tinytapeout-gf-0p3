@@ -1,0 +1,65 @@
+# Tiny Tapeout project information
+project:
+  title:        "tnt's recreation of a 555 on GF180mcu"
+  author:       "Sylvain Munaut"
+  discord:      "246tnt"
+  description:  "Just a simple classic timer IC re-imagined"
+  language:     "Analog"
+  clock_hz:     0
+
+  # How many tiles your design occupies? A single tile is about 167x108 uM.
+  tiles: "1x2"
+
+  # How many analog pins does your project use?
+  analog_pins: 6
+  uses_vapwr: true
+
+  # Your top module name must start with "tt_um_". Make it unique by including your github username:
+  top_module:  "tt_um_tnt_gf_555"
+  
+  # List your project's source files here. Source files must be in ./src and you must list each source file separately, one per line:
+  source_files:        
+    - "tt_um_tnt_gf_555.v"
+
+# The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
+pinout:
+  # Inputs
+  ui[0]: ""
+  ui[1]: ""
+  ui[2]: ""
+  ui[3]: ""
+  ui[4]: ""
+  ui[5]: ""
+  ui[6]: ""
+  ui[7]: ""
+
+  # Outputs
+  uo[0]: "On-Chip oscillator output"
+  uo[1]: ""
+  uo[2]: ""
+  uo[3]: ""
+  uo[4]: ""
+  uo[5]: ""
+  uo[6]: ""
+  uo[7]: ""
+
+  # Bidirectional pins
+  uio[0]: "On-Chip oscillator discharge"
+  uio[1]: ""
+  uio[2]: ""
+  uio[3]: ""
+  uio[4]: ""
+  uio[5]: ""
+  uio[6]: ""
+  uio[7]: ""
+
+  # Analog pins
+  ua[0]: "threshold"
+  ua[1]: "trigger"
+  ua[2]: "reset_n"
+  ua[3]: "control"
+  ua[4]: "out"
+  ua[5]: "discharge"
+
+# Do not change!
+yaml_version: 6
