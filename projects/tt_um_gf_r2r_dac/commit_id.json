@@ -1,8 +1,8 @@
 {
   "app": "custom_gds action",
   "repo": "https://github.com/mattvenn/gf-r2r-dac",
-  "commit": "37a354f52bbdf1a5fa5c55e56d7a08b25ee9d94e",
-  "workflow_url": "https://github.com/mattvenn/gf-r2r-dac/actions/runs/27359604321",
+  "commit": "1c5c8ddec54fc4e70ce03a19510d4d7461b919e9",
+  "workflow_url": "https://github.com/mattvenn/gf-r2r-dac/actions/runs/27504654726",
   "project_id": 5143,
   "sort_id": 1781193590201,
   "analog": true
