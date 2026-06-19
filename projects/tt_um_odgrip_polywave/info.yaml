@@ -1,0 +1,63 @@
+project:
+  title:        "PolyWave"
+  author:       "Riccardo Pellegrini"
+  discord:      ""
+  description:  "Mixed-signal four-channel waveform source with a compact digital engine driving four 16-bit R-2R DACs."
+  language:     "Analog"
+  clock_hz:     50000000
+
+  tiles: "1x2"
+
+  analog_pins: 4
+  # The submitted GDS uses the GF180 pgvaa analog frame. Keep VAPWR in the
+  # Tiny Tapeout interface even though the current digital engine does not
+  # consume the analog supply internally.
+  uses_vapwr: true
+
+  top_module:  "tt_um_odgrip_polywave"
+
+  source_files:
+    - "project.v"
+
+# The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
+# This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
+pinout:
+  # Inputs
+  ui[0]: "MOD0"
+  ui[1]: "MOD1"
+  ui[2]: "MOD2"
+  ui[3]: "TEMPO_HI"
+  ui[4]: "SCENE0"
+  ui[5]: "SCENE1"
+  ui[6]: "FREEZE/LOAD"
+  ui[7]: "DIRECT"
+
+  # Outputs
+  uo[0]: "MOD0_MON"
+  uo[1]: "MOD1_MON"
+  uo[2]: "MOD2_MON"
+  uo[3]: "SEQ0"
+  uo[4]: "SEQ1"
+  uo[5]: "SEQ2"
+  uo[6]: "SEQ3"
+  uo[7]: "TEMPO_TICK"
+
+  # Bidirectional pins
+  uio[0]: "LIVE0"
+  uio[1]: "LIVE1"
+  uio[2]: "LIVE2"
+  uio[3]: "LIVE3"
+  uio[4]: "LIVE4"
+  uio[5]: "LIVE5"
+  uio[6]: "LIVE6"
+  uio[7]: "LIVE7"
+
+  # Analog pins
+  ua[0]: "DAC_A"
+  ua[1]: "DAC_B"
+  ua[2]: "DAC_C"
+  ua[3]: "DAC_D"
+  ua[4]: ""
+  ua[5]: ""
+# Do not change!
+yaml_version: 6
