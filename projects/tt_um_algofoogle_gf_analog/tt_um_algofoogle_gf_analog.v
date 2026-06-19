@@ -20,22 +20,67 @@ module tt_um_algofoogle_gf_analog (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-    wire vco_out;
+    wire vco_out; // Weakly buffered output from main VCO block.
+    wire vco_in; // Buffered VCO output, going into the digital block.
 
-    wire vin = ua[0];
-    assign ua[1] = vco_out;
+    wire vin = ua[0]; // VCO control voltage.
 
     digital digital_0 (
         .VDD        (VDPWR),
         .VSS        (VGND),
         .clk        (clk),
         .rst_n      (rst_n),
-        .vco_in     (vco_out),
+        .vco_in     (vco_in),
         .ui_in      (ui_in),
         .uio_in     (uio_in),
         .uio_oe     (uio_oe),
         .uio_out    (uio_out),
         .uo_out     (uo_out)
+    );
+
+    // Buffer vco_out and send it out ua[1]:
+    wire ua1buf_mid;
+    bufinv_2 ua1buf0 (
+        .VCC        (VDPWR),
+        .VSS        (VGND),
+        .A          (vco_out),
+        .Y          (ua1buf_mid)
+    );
+    bufinv_2 ua1buf1 (
+        .VCC        (VDPWR),
+        .VSS        (VGND),
+        .A          (ua1buf_mid),
+        .Y          (ua[1])
+    );
+
+    // Also buffer vco_out and send it all the way across the tile
+    // to another buffer that drives the signal into the digital block:
+    wire txdigbuf_mid;
+    wire vco_tx;
+    wire rxdigbuf_mid;
+    bufinv_2 txdigbuf0 (
+        .VCC        (VDPWR),
+        .VSS        (VGND),
+        .A          (vco_out),
+        .Y          (txdigbuf_mid)
+    );
+    bufinv_2 txua1buf1 (
+        .VCC        (VDPWR),
+        .VSS        (VGND),
+        .A          (txdigbuf_mid),
+        .Y          (vco_tx)
+    );
+    bufinv_2 rxdigbuf0 (
+        .VCC        (VDPWR),
+        .VSS        (VGND),
+        .A          (vco_tx),
+        .Y          (rxdigbuf_mid)
+    );
+    bufinv_2 rxua1buf1 (
+        .VCC        (VDPWR),
+        .VSS        (VGND),
+        .A          (rxdigbuf_mid),
+        .Y          (vco_in)
     );
 
     csringosc csringosc_0 (
