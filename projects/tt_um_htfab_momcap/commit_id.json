@@ -1,8 +1,8 @@
 {
   "app": "custom_gds action",
   "repo": "https://github.com/htfab/ttgf0p3-momcap",
-  "commit": "859d95ac7d2483bffffd481f1ff94a511f4e05cb",
-  "workflow_url": "https://github.com/htfab/ttgf0p3-momcap/actions/runs/27246302328",
+  "commit": "3d15bf6e10746c07e031954cc2723c99db58ff2a",
+  "workflow_url": "https://github.com/htfab/ttgf0p3-momcap/actions/runs/27837700413",
   "project_id": 5128,
   "sort_id": 1781087892103,
   "analog": true
