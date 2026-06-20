@@ -420,7 +420,15 @@ MACRO tt_um_odgrip_polywave
     USE POWER ;
     PORT
       LAYER Metal4 ;
-        RECT 1.000 5.000 3.000 320.360 ;
+        RECT 76.335 5.000 78.335 320.360 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 160.725 5.000 162.725 320.360 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 245.085 5.000 247.085 320.360 ;
     END
   END VDPWR
   PIN VGND
@@ -428,7 +436,15 @@ MACRO tt_um_odgrip_polywave
     USE GROUND ;
     PORT
       LAYER Metal4 ;
-        RECT 4.000 5.000 6.000 320.360 ;
+        RECT 79.335 5.000 81.335 320.360 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 163.725 5.000 165.725 320.360 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 248.085 5.000 250.085 320.360 ;
     END
   END VGND
   PIN VAPWR
@@ -436,7 +452,7 @@ MACRO tt_um_odgrip_polywave
     USE POWER ;
     PORT
       LAYER Metal4 ;
-        RECT 7.000 5.000 9.000 320.360 ;
+        RECT 4.580 5.000 6.580 320.360 ;
     END
   END VAPWR
 END tt_um_odgrip_polywave
