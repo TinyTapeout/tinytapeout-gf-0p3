@@ -1,0 +1,137 @@
+151. Printing statistics.
+
+=== trng_ro_inverter_cell ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+        2        - wires
+        2        - wire bits
+        2        - public wires
+        2        - public wire bits
+        2        - ports
+        2        - port bits
+        1   13.171 cells
+        1   13.171   gf180mcu_fd_sc_mcu7t5v0__inv_2
+
+   Chip area for module '\trng_ro_inverter_cell': 13.171200
+     of which used for sequential elements: 0.000000 (0.00%)
+
+=== tt_um_gojimmypi_ttgf_UART_FSM_TRNG_Lab ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+     2761        - wires
+     2796        - wire bits
+      725        - public wires
+      760        - public wire bits
+        8        - ports
+       43        - port bits
+     2665 6.91E+04 cells
+       89 1.56E+03   gf180mcu_fd_sc_mcu7t5v0__and2_1
+       28  614.656   gf180mcu_fd_sc_mcu7t5v0__and3_1
+       22  531.238   gf180mcu_fd_sc_mcu7t5v0__and4_1
+       97 2.13E+03   gf180mcu_fd_sc_mcu7t5v0__aoi211_1
+      191 3.35E+03   gf180mcu_fd_sc_mcu7t5v0__aoi21_1
+       11  265.619   gf180mcu_fd_sc_mcu7t5v0__aoi221_1
+       19  583.923   gf180mcu_fd_sc_mcu7t5v0__aoi222_1
+      133 2.63E+03   gf180mcu_fd_sc_mcu7t5v0__aoi22_1
+      128 1.69E+03   gf180mcu_fd_sc_mcu7t5v0__buf_1
+      229 2.01E+03   gf180mcu_fd_sc_mcu7t5v0__clkinv_1
+      341 2.17E+04   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+      110 8.21E+03   gf180mcu_fd_sc_mcu7t5v0__dffrnq_1
+       29 2.29E+03   gf180mcu_fd_sc_mcu7t5v0__dffsnq_1
+       31 1.02E+03   gf180mcu_fd_sc_mcu7t5v0__mux2_2
+        4  280.986   gf180mcu_fd_sc_mcu7t5v0__mux4_1
+      265  2908.64   gf180mcu_fd_sc_mcu7t5v0__nand2_1
+       87 1.34E+03   gf180mcu_fd_sc_mcu7t5v0__nand3_1
+       26  513.677   gf180mcu_fd_sc_mcu7t5v0__nand4_1
+      284 3.74E+03   gf180mcu_fd_sc_mcu7t5v0__nor2_1
+       76 1.33E+03   gf180mcu_fd_sc_mcu7t5v0__nor3_1
+       36  790.272   gf180mcu_fd_sc_mcu7t5v0__nor4_1
+       42  921.984   gf180mcu_fd_sc_mcu7t5v0__oai211_1
+      214 3.76E+03   gf180mcu_fd_sc_mcu7t5v0__oai21_1
+        6  158.054   gf180mcu_fd_sc_mcu7t5v0__oai221_1
+       16  351.232   gf180mcu_fd_sc_mcu7t5v0__oai22_1
+        7   169.03   gf180mcu_fd_sc_mcu7t5v0__oai31_1
+        4   105.37   gf180mcu_fd_sc_mcu7t5v0__oai32_1
+       27  474.163   gf180mcu_fd_sc_mcu7t5v0__or2_1
+        7  153.664   gf180mcu_fd_sc_mcu7t5v0__or3_1
+        5  131.712   gf180mcu_fd_sc_mcu7t5v0__or4_1
+        6   52.685   gf180mcu_fd_sc_mcu7t5v0__tieh
+        6   52.685   gf180mcu_fd_sc_mcu7t5v0__tiel
+       18  513.677   gf180mcu_fd_sc_mcu7t5v0__xnor2_1
+        7  368.794   gf180mcu_fd_sc_mcu7t5v0__xnor3_1
+       37  974.669   gf180mcu_fd_sc_mcu7t5v0__xor2_1
+       27 1.36E+03   gf180mcu_fd_sc_mcu7t5v0__xor3_1
+      112        - submodules
+      112        -   trng_ro_inverter_cell
+
+   Chip area for module '\tt_um_gojimmypi_ttgf_UART_FSM_TRNG_Lab': 69052.211200
+     of which used for sequential elements: 32210.169600 (46.65%)
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        |        +-Area including submodules.
+        |        | 
+     2777 7.05E+04 tt_um_gojimmypi_ttgf_UART_FSM_TRNG_Lab
+        1   13.171 trng_ro_inverter_cell
+
+        +----------Count including submodules.
+        |        +-Area including submodules.
+        |        | 
+     2985        - wires
+     3020        - wire bits
+      949        - public wires
+      984        - public wire bits
+      232        - ports
+      267        - port bits
+        -        - memories
+        -        - memory bits
+        -        - processes
+     2777 7.05E+04 cells
+       89 1.56E+03   gf180mcu_fd_sc_mcu7t5v0__and2_1
+       28  614.656   gf180mcu_fd_sc_mcu7t5v0__and3_1
+       22  531.238   gf180mcu_fd_sc_mcu7t5v0__and4_1
+       97 2.13E+03   gf180mcu_fd_sc_mcu7t5v0__aoi211_1
+      191 3.35E+03   gf180mcu_fd_sc_mcu7t5v0__aoi21_1
+       11  265.619   gf180mcu_fd_sc_mcu7t5v0__aoi221_1
+       19  583.923   gf180mcu_fd_sc_mcu7t5v0__aoi222_1
+      133 2.63E+03   gf180mcu_fd_sc_mcu7t5v0__aoi22_1
+      128 1.69E+03   gf180mcu_fd_sc_mcu7t5v0__buf_1
+      229 2.01E+03   gf180mcu_fd_sc_mcu7t5v0__clkinv_1
+      341 2.17E+04   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+      110 8.21E+03   gf180mcu_fd_sc_mcu7t5v0__dffrnq_1
+       29 2.29E+03   gf180mcu_fd_sc_mcu7t5v0__dffsnq_1
+      112 1.48E+03   gf180mcu_fd_sc_mcu7t5v0__inv_2
+       31 1.02E+03   gf180mcu_fd_sc_mcu7t5v0__mux2_2
+        4  280.986   gf180mcu_fd_sc_mcu7t5v0__mux4_1
+      265  2908.64   gf180mcu_fd_sc_mcu7t5v0__nand2_1
+       87 1.34E+03   gf180mcu_fd_sc_mcu7t5v0__nand3_1
+       26  513.677   gf180mcu_fd_sc_mcu7t5v0__nand4_1
+      284 3.74E+03   gf180mcu_fd_sc_mcu7t5v0__nor2_1
+       76 1.33E+03   gf180mcu_fd_sc_mcu7t5v0__nor3_1
+       36  790.272   gf180mcu_fd_sc_mcu7t5v0__nor4_1
+       42  921.984   gf180mcu_fd_sc_mcu7t5v0__oai211_1
+      214 3.76E+03   gf180mcu_fd_sc_mcu7t5v0__oai21_1
+        6  158.054   gf180mcu_fd_sc_mcu7t5v0__oai221_1
+       16  351.232   gf180mcu_fd_sc_mcu7t5v0__oai22_1
+        7   169.03   gf180mcu_fd_sc_mcu7t5v0__oai31_1
+        4   105.37   gf180mcu_fd_sc_mcu7t5v0__oai32_1
+       27  474.163   gf180mcu_fd_sc_mcu7t5v0__or2_1
+        7  153.664   gf180mcu_fd_sc_mcu7t5v0__or3_1
+        5  131.712   gf180mcu_fd_sc_mcu7t5v0__or4_1
+        6   52.685   gf180mcu_fd_sc_mcu7t5v0__tieh
+        6   52.685   gf180mcu_fd_sc_mcu7t5v0__tiel
+       18  513.677   gf180mcu_fd_sc_mcu7t5v0__xnor2_1
+        7  368.794   gf180mcu_fd_sc_mcu7t5v0__xnor3_1
+       37  974.669   gf180mcu_fd_sc_mcu7t5v0__xor2_1
+       27 1.36E+03   gf180mcu_fd_sc_mcu7t5v0__xor3_1
+      112 1.48E+03 submodules
+      112 1.48E+03   trng_ro_inverter_cell
+
+   Chip area for top module '\tt_um_gojimmypi_ttgf_UART_FSM_TRNG_Lab': 70527.385600
+     of which used for sequential elements: 32210.169600 (45.67%)
+
