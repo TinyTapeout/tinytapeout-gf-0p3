@@ -1,0 +1,9 @@
+{
+  "app": "custom_gds action",
+  "repo": "https://github.com/gojimmypi/ttgf0p3-analog-UART-FSM-TRNG-Lab",
+  "commit": "e80a870e56f8bfae7716f9b041ca6f2a6c76d5f7",
+  "workflow_url": "https://github.com/gojimmypi/ttgf0p3-analog-UART-FSM-TRNG-Lab/actions/runs/28349098379",
+  "project_id": 5276,
+  "sort_id": 1782938509281,
+  "analog": true
+}
