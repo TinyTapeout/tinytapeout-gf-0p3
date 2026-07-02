@@ -11,7 +11,7 @@ project:
   tiles: "1x2"          # Valid values for analog projects: 1x2, 2x2, 3x2, 4x2
 
   # How many analog pins does your project use?
-  analog_pins: 2        # Valid values: 0 to 6
+  analog_pins: 4        # Valid values: 0 to 6
   uses_vapwr: false     # Set to true if your project uses the second analog power supply (VAPWR) in addition to VDPWR (3.3V)
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
@@ -25,40 +25,40 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
-  ui[2]: ""
-  ui[3]: ""
-  ui[4]: ""
-  ui[5]: ""
+  ui[0]: "dac_d0"
+  ui[1]: "dac_d1"
+  ui[2]: "dac_d2"
+  ui[3]: "dac_load"
+  ui[4]: "dac_shift"
+  ui[5]: "vco_disable"
   ui[6]: ""
-  ui[7]: ""
+  ui[7]: "vga_mode"
 
-  # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
+  # Outputs -- Tiny VGA PMOD:
+  uo[0]: "R1"
+  uo[1]: "G1"
+  uo[2]: "B1"
+  uo[3]: "VSync"
+  uo[4]: "R0"
+  uo[5]: "G0"
+  uo[6]: "B0"
+  uo[7]: "HSync"
 
   # Bidirectional pins
-  uio[0]: "osc_out"
-  uio[1]: "counter_out[0]"
-  uio[2]: "counter_out[1]"
-  uio[3]: "counter_out[2]"
-  uio[4]: "counter_out[3]"
-  uio[5]: "counter_out[4]"
-  uio[6]: ""
-  uio[7]: ""
+  uio[0]: "avo[0]"
+  uio[1]: "avo[1]"
+  uio[2]: "avo[4]"
+  uio[3]: "avo[5]"
+  uio[4]: "dvo[0]"
+  uio[5]: "dvo[1]"
+  uio[6]: "dvo[4]"
+  uio[7]: "dvo[5]"
 
   # Analog pins - make sure to also set "analog_pins" above, else the pins won't be connected
-  ua[0]: "vin"
-  ua[1]: "vco_out"
-  ua[2]: ""
-  ua[3]: ""
+  ua[0]: "ana_vco_vin"
+  ua[1]: "ana_vco_out"
+  ua[2]: "dac_vco_vin"
+  ua[3]: "dac_vco_out"
   ua[4]: ""
   ua[5]: ""
 
