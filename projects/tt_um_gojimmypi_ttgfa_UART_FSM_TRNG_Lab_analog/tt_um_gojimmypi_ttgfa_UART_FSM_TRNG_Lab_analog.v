@@ -67,8 +67,8 @@
 
     `ifdef USE_LONG_STRINGS
         /* GF 0p3 analog experiment build. */
-        `define VERSION_STRING_LEN 23 /* 123456789012345678901234 */
-        `define VERSION_STRING          "Version 1.1.1 6/27/2026"
+        `define VERSION_STRING_LEN 22 /* 1234567890123456789012 */
+        `define VERSION_STRING          "Version 1.1.5 7/1/2026"
         /* GF 0p3 deadline: July 3, 1:00PM PDT */
     `else
         /* no long strings */
@@ -225,7 +225,7 @@
     `ifdef PDK_TARGET_SKY130
         /* no JTAG at this time */
     `else
-        `define JTAG_ENABLED
+        // `define JTAG_ENABLED
     `endif
 
     /* FPGA-only: ignore reg_oscen and expose raw deterministic LFSR taps.
@@ -398,6 +398,8 @@
 `ifdef SIM_JTAG_CORE_TB
     `timescale 1ns / 1ps
 `endif
+
+`ifdef JTAG_ENABLED
 
 module jtag_core #(
     /* ID code TTJ1 */
@@ -628,6 +630,8 @@ always @(posedge clk) begin
 end
 
 endmodule
+
+`endif /* JTAG_ENABLED */
 
 `default_nettype wire
 /* ---- end expanded source: src/JTAG/jtag_core.v ---- */
@@ -1459,7 +1463,9 @@ module uart_trng_ascii_core
     input  wire [7:0] uo_out,
     input  wire [7:0] uio_in,
     input  wire [7:0] uio_out,
-    input  wire [7:0] uio_oe
+    input  wire [7:0] uio_oe,
+    input  wire [7:0] analog_status,
+    input  wire [7:0] analog_measure
 `endif
 );
     /* Boilerplate parameter checking */
@@ -1863,6 +1869,8 @@ module uart_trng_ascii_core
         .uio_in(uio_in),
         .uio_out(uio_out),
         .uio_oe(uio_oe),
+        .analog_status(analog_status),
+        .analog_measure(analog_measure),
 `endif
 
 `ifdef TRNG_BINARY_STREAM
@@ -2023,13 +2031,15 @@ endmodule
  * - Bxy<CR>    : stream xy raw bytes, waiting for a fresh TRNG sample before each byte.
  * - Cxy<CR>    : Cxy: stream xy conditioned bytes, waiting for a fresh TRNG sample before each byte.
  * - U3<CR>     : select 921600 UART baud after OK<CR> completes.
- * - V<CR>      : replies Version 1.1.1 6/27/2026<CR>
+ * - V<CR>      : replies Version 1.1.5 7/1/2026<CR>
  * - RD<CR>     : Replies with Build Target ID. 85 == ULX3S, 42 == target GF180
+ * - RE<CR>     : read analog pad status
+ * - RF<CR>     : read ua[5] passive-structure threshold/decay timing sample
  *
  * Reply format:
  * - Successful write: OK<CR>
  * - Successful read : Rn=HH<CR>
- * - Version query   : Version 1.1.1 6/27/2026<CR>
+ * - Version query   : Version 1.1.5 7/1/2026<CR>
  * - Parse/error     : ?<CR>
  */
 `default_nettype none
@@ -2070,6 +2080,8 @@ module trng_cfg_ascii_core
     input  wire [7:0] uio_in,
     input  wire [7:0] uio_out,
     input  wire [7:0] uio_oe,
+    input  wire [7:0] analog_status,
+    input  wire [7:0] analog_measure,
 `endif
 
 `ifdef TRNG_BINARY_STREAM
@@ -2134,12 +2146,14 @@ module trng_cfg_ascii_core
 
 
 `ifdef BIG16_SPI_REG
-    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UI_IN   = 8;
-    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UO_OUT  = 9;
-    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UIO_IN  = 10;
-    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UIO_OUT = 11;
-    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UIO_OE  = 12;
-    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_BUILD   = 13;
+    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UI_IN       = 8;
+    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UO_OUT      = 9;
+    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UIO_IN      = 10;
+    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UIO_OUT     = 11;
+    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_UIO_OE      = 12;
+    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_BUILD       = 13;
+    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_ANALOG_STAT = 14;
+    localparam [`SPI_ADDR_MSB:0] SPI_REG_ADDR_ANALOG_MEAS = 15;
 
     /*
      * Build Target ID:
@@ -2355,6 +2369,8 @@ module trng_cfg_ascii_core
      * 0..4 are writable configuration registers.
      * 5..7 are read-only status/data registers coming back from the TRNG side.
      * With TRNG_HEALTH_STATUS enabled, R5 bits 7..3 are health flags.
+     * In BIG16_SPI_REG builds, R14 exposes sampled analog experiment status
+     * and R15 exposes the ua[5] passive-structure threshold/decay timing sample.
      */
     function [7:0] read_reg;
         input [`SPI_ADDR_MSB:0] addr;
@@ -2373,14 +2389,14 @@ module trng_cfg_ascii_core
 
 `ifdef BIG16_SPI_REG
                 /* REGS 8..15 */
-                SPI_REG_ADDR_UI_IN:   read_reg = ui_in;
-                SPI_REG_ADDR_UO_OUT:  read_reg = uo_out;
-                SPI_REG_ADDR_UIO_IN:  read_reg = uio_in;
-                SPI_REG_ADDR_UIO_OUT: read_reg = uio_out;
-                SPI_REG_ADDR_UIO_OE:  read_reg = uio_oe;
-                SPI_REG_ADDR_BUILD:   read_reg = BUILD_TARGET_ID;
-                /* 14 unused */
-                /* 15 unused */
+                SPI_REG_ADDR_UI_IN:       read_reg = ui_in;
+                SPI_REG_ADDR_UO_OUT:      read_reg = uo_out;
+                SPI_REG_ADDR_UIO_IN:      read_reg = uio_in;
+                SPI_REG_ADDR_UIO_OUT:     read_reg = uio_out;
+                SPI_REG_ADDR_UIO_OE:      read_reg = uio_oe;
+                SPI_REG_ADDR_BUILD:       read_reg = BUILD_TARGET_ID;
+                SPI_REG_ADDR_ANALOG_STAT: read_reg = analog_status;
+                SPI_REG_ADDR_ANALOG_MEAS: read_reg = analog_measure;
 `endif
 
                 default:              read_reg = 8'h00;
@@ -2422,12 +2438,14 @@ module trng_cfg_ascii_core
             SPI_REG_ADDR_RAWHI:  spi_reg_rdata = reg_rawhi;
 
         `ifdef BIG16_SPI_REG
-            SPI_REG_ADDR_UI_IN:   spi_reg_rdata = ui_in;
-            SPI_REG_ADDR_UO_OUT:  spi_reg_rdata = uo_out;
-            SPI_REG_ADDR_UIO_IN:  spi_reg_rdata = uio_in;
-            SPI_REG_ADDR_UIO_OUT: spi_reg_rdata = uio_out;
-            SPI_REG_ADDR_UIO_OE:  spi_reg_rdata = uio_oe;
-            SPI_REG_ADDR_BUILD:   spi_reg_rdata = BUILD_TARGET_ID;
+            SPI_REG_ADDR_UI_IN:       spi_reg_rdata = ui_in;
+            SPI_REG_ADDR_UO_OUT:      spi_reg_rdata = uo_out;
+            SPI_REG_ADDR_UIO_IN:      spi_reg_rdata = uio_in;
+            SPI_REG_ADDR_UIO_OUT:     spi_reg_rdata = uio_out;
+            SPI_REG_ADDR_UIO_OE:      spi_reg_rdata = uio_oe;
+            SPI_REG_ADDR_BUILD:       spi_reg_rdata = BUILD_TARGET_ID;
+            SPI_REG_ADDR_ANALOG_STAT: spi_reg_rdata = analog_status;
+            SPI_REG_ADDR_ANALOG_MEAS: spi_reg_rdata = analog_measure;
         `endif
 
             default:             spi_reg_rdata = 8'h00;
@@ -3306,6 +3324,10 @@ endmodule
  *   connected to external RC filters, scopes, counters, or Analog Discovery.
  * - The input pins are sampled through ordinary CMOS input thresholds, which
  *   is useful for threshold/noise experiments but not a real comparator model.
+ * - The analog GDS patch flow adds one small real on-chip passive structure on ua[5]:
+ *   a Metal4 pickup/fringe capacitor tied to the puf_probe pad and nearby
+ *   grounded Metal4.  This RTL exercises that physical structure with the
+ *   same charge/release/sample sequence used for external RC experiments.
  *
  * Analog pin roles:
  * - ua[0]: ain_ext       high-Z input, sampled by the CMOS threshold
@@ -3313,7 +3335,7 @@ endmodule
  * - ua[2]: cmp_ref_ext   high-Z input, sampled by the CMOS threshold
  * - ua[3]: amon_out      monitor mux output
  * - ua[4]: osc_out       clock-divider/TRNG monitor output
- * - ua[5]: puf_probe     charge/release/sample probe pad
+ * - ua[5]: puf_probe     charge/release/sample probe pad with GDS-level Metal4 passive
  *
  * Control through the existing UART/SPI registers:
  * - R0/reg_ctrl[0]       global analog enable, via E1/E0
@@ -3340,6 +3362,20 @@ endmodule
  * - R4/reg_oscen[1]      enable ua[3] amon_out driver
  * - R4/reg_oscen[2]      enable ua[4] osc_out driver
  * - R4/reg_oscen[3]      enable ua[5] puf_probe charge/release driver
+ * - R14/0xE             read analog status through UART/SPI
+ * - R15/0xF             read latest puf_probe threshold/decay timing sample
+ *                         bit 0: sampled ua[0]
+ *                         bit 1: sampled ua[2]
+ *                         bit 2: ua[0] & ~ua[2] threshold compare
+ *                         bit 3: live sampled ua[5]
+ *                         bit 4: latched ua[5] probe sample
+ *                         bit 5: current sigma-delta bit
+ *                         bit 6: current osc/TRNG monitor bit
+ *                         bit 7: puf_probe driver enabled
+ * - R15/0xF             puf_probe threshold/decay timing
+ *                         00: no threshold crossing observed yet
+ *                         01..FE: cycles from release to CMOS threshold crossing
+ *                         FF: saturated/no crossing before timeout
  *
  * Example bring-up commands:
  * - E1, D10, O01          enable half-scale sigma-delta DAC on ua[1]
@@ -3347,6 +3383,7 @@ endmodule
  * - E1, M03, O02          monitor sampled ain_ext & ~cmp_ref_ext on ua[3]
  * - E1, D20, M00, O05     enable DAC plus divided-clock output on ua[4]
  * - E1, M18, O08          run puf_probe charge/release/sample sequence
+ * - RF                     read latest ua[5] passive-structure decay timing sample
  */
 `default_nettype none
 
@@ -3363,6 +3400,8 @@ module analog_experiment_stub
     input  wire [7:0] reg_rawlo,
     input  wire [7:0] reg_rawhi,
     input  wire       trng_bit,
+    output wire [7:0] analog_status,
+    output wire [7:0] analog_measure,
     inout  wire [7:0] ua
 );
 
@@ -3400,10 +3439,14 @@ module analog_experiment_stub
     reg        osc_out_q;
 
     reg  [7:0] probe_ctr;
+    reg  [7:0] probe_decay_ctr_q;
+    reg  [7:0] probe_decay_q;
+    reg        probe_decay_active_q;
     reg        probe_drive_oe_q;
     reg        probe_drive_q;
     reg        probe_sample_q;
     reg  [1:0] probe_phase;
+    reg  [1:0] probe_phase_q;
 
     assign analog_enable    = reg_ctrl[0];
     assign analog_invert    = reg_ctrl[1];
@@ -3442,6 +3485,19 @@ module analog_experiment_stub
     assign amon_pin_out = amon_mux ^ analog_invert;
     assign osc_pin_out  = (osc_src_trng ? trng_bit : osc_out_q) ^ analog_invert;
 
+    assign analog_status = {
+        probe_drive_oe_q,
+        (osc_src_trng ? trng_bit : osc_out_q),
+        dac_out_q,
+        probe_sample_q,
+        probe_sync,
+        cmp_threshold,
+        ref_sync,
+        ain_sync
+    };
+
+    assign analog_measure = probe_decay_q;
+
     assign ua[0] = 1'bz;
     assign ua[1] = dac_pin_oe ? dac_pin_out : 1'bz;
     assign ua[2] = 1'bz;
@@ -3473,10 +3529,14 @@ module analog_experiment_stub
             dac_out_q        <= 1'b0;
             osc_ctr          <= 8'h00;
             osc_out_q        <= 1'b0;
-            probe_ctr        <= 8'h00;
-            probe_drive_oe_q <= 1'b0;
-            probe_drive_q    <= 1'b0;
-            probe_sample_q   <= 1'b0;
+            probe_ctr            <= 8'h00;
+            probe_decay_ctr_q    <= 8'h00;
+            probe_decay_q        <= 8'h00;
+            probe_decay_active_q <= 1'b0;
+            probe_drive_oe_q     <= 1'b0;
+            probe_drive_q        <= 1'b0;
+            probe_sample_q       <= 1'b0;
+            probe_phase_q        <= 2'd0;
         end else begin
             ain_meta   <= ua[0];
             ain_sync   <= ain_meta;
@@ -3506,32 +3566,59 @@ module analog_experiment_stub
             end
 
             if (probe_pin_enable) begin
-                probe_ctr <= probe_ctr + 8'h01;
+                probe_ctr     <= probe_ctr + 8'h01;
+                probe_phase_q <= probe_phase;
 
                 case (probe_phase)
                     2'd0: begin
-                        probe_drive_oe_q <= 1'b1;
-                        probe_drive_q    <= ~probe_discharge;
+                        probe_drive_oe_q     <= 1'b1;
+                        probe_drive_q        <= ~probe_discharge;
+                        probe_decay_ctr_q    <= 8'h00;
+                        probe_decay_active_q <= 1'b0;
                     end
                     2'd1: begin
                         probe_drive_oe_q <= 1'b0;
                         probe_drive_q    <= ~probe_discharge;
+
+                        if (probe_phase_q != 2'd1) begin
+                            probe_decay_ctr_q    <= 8'h00;
+                            probe_decay_active_q <= 1'b1;
+                        end else if (probe_decay_active_q) begin
+                            if (probe_sync != ~probe_discharge) begin
+                                probe_decay_q        <= probe_decay_ctr_q;
+                                probe_decay_active_q <= 1'b0;
+                            end else if (probe_decay_ctr_q != 8'hff) begin
+                                probe_decay_ctr_q <= probe_decay_ctr_q + 8'h01;
+                            end else begin
+                                probe_decay_q        <= 8'hff;
+                                probe_decay_active_q <= 1'b0;
+                            end
+                        end
                     end
                     2'd2: begin
                         probe_drive_oe_q <= 1'b0;
                         probe_drive_q    <= ~probe_discharge;
                         probe_sample_q   <= probe_sync;
+
+                        if (probe_decay_active_q) begin
+                            probe_decay_q        <= probe_decay_ctr_q;
+                            probe_decay_active_q <= 1'b0;
+                        end
                     end
                     default: begin
-                        probe_drive_oe_q <= 1'b1;
-                        probe_drive_q    <= probe_discharge;
+                        probe_drive_oe_q     <= 1'b1;
+                        probe_drive_q        <= probe_discharge;
+                        probe_decay_active_q <= 1'b0;
                     end
                 endcase
             end else begin
-                probe_ctr        <= 8'h00;
-                probe_drive_oe_q <= 1'b0;
-                probe_drive_q    <= 1'b0;
-                probe_sample_q   <= probe_sync;
+                probe_ctr            <= 8'h00;
+                probe_decay_ctr_q    <= 8'h00;
+                probe_decay_active_q <= 1'b0;
+                probe_drive_oe_q     <= 1'b0;
+                probe_drive_q        <= 1'b0;
+                probe_sample_q       <= probe_sync;
+                probe_phase_q        <= 2'd0;
             end
         end
     end
@@ -4638,7 +4725,7 @@ module trng_ro_inverter_cell
         //`endif
 
         `ifdef ANALOG_ENABLED
-            /* This project intentionally enables and requires analog features */
+            /* This build intentionally keeps the GF180 analog wrapper enabled */
         `else
             PROJECT_ASIC_GF180_REQUIRE_ANALOG_ENABLED u_stop (); /* Hard fail if analog not enabled */
         `endif
@@ -4948,6 +5035,8 @@ endmodule /* trng_stub */
  * - uio_oe[7:0]  : UIO direction control
  *
  * - ua[5:0]      : GF 0p3 analog experiment pins
+ * - R14/0xE      : analog_status readback when BIG16_SPI_REG is enabled
+ * - R15/0xF      : ua[5] passive-structure threshold/decay timing readback
  *
  * This module contains almost no behavior of its own. It is mostly a pin-map
  * and visibility wrapper around uart_trng_ascii_core.
@@ -4960,13 +5049,13 @@ endmodule /* trng_stub */
 
 /* local include expanded by tools/build_custom_gds_verilog.py */
 
-module tt_um_main 
+module tt_um_main
 #(
     parameter [31:0] CLOCK_HZ  = `PROJECT_CLOCK_HZ,
     parameter [31:0] UART_BAUD = `PROJECT_UART_BAUD
 )
 (
-    /* For Tiny Tapeout, these are the only ports you can use. 
+    /* For Tiny Tapeout, these are the only ports you can use.
      * See:    https://tinytapeout.com/specs/pinouts/         */
     input  wire [7:0] ui_in,
     output wire [7:0] uo_out,
@@ -5011,6 +5100,8 @@ module tt_um_main
     wire [7:0] uo_out_normal;
     wire [7:0] uio_out_normal;
     wire [7:0] uio_oe_normal;
+    wire [7:0] analog_status;
+    wire [7:0] analog_measure;
 
 `ifdef PIN_DIAG
     wire       pin_id_enable;
@@ -5131,7 +5222,7 @@ module tt_um_main
         reg_oscen,
 `endif
         reg_status[7:3],
-        reg_rawlo[7:3], 
+        reg_rawlo[7:3],
         reg_rawhi[3:0]
     }; /* _unused_debug_regs */
 
@@ -5150,7 +5241,7 @@ module tt_um_main
         assign unused_ok = &{ena, uio_in};
     `endif
 `endif
-    
+
     /*
      * Synchronize global reset, rst_n wire to rst_sync_n reg.
      */
@@ -5165,7 +5256,7 @@ module tt_um_main
     end /* reset sync */
 
 
-    /* 
+    /*
      * Synchronize asynchronous UART RX input to the local clock domain.
      *
      * The external UART RX pin (ui_in[3]) is asynchronous to clk and can
@@ -5198,7 +5289,7 @@ module tt_um_main
     always @(posedge clk) begin
         if (!rst_sync_n) begin
         `ifdef ULX3S
-            /* The default, unconnected gp4 on the ULX3S is high, 
+            /* The default, unconnected gp4 on the ULX3S is high,
              * reset sets debug mode to 1 for SPI */
             debug_sel_meta <= 1'b1;
             debug_sel_sync <= 1'b1;
@@ -5294,8 +5385,10 @@ module tt_um_main
         .uo_out(uo_out),
         .uio_in(uio_in),
         .uio_out(uio_out),
-        .uio_oe(uio_oe)
-`endif    
+        .uio_oe(uio_oe),
+        .analog_status(analog_status),
+        .analog_measure(analog_measure)
+`endif
 );
 
 /*
@@ -5319,8 +5412,13 @@ module tt_um_main
         .reg_rawlo(reg_rawlo),
         .reg_rawhi(reg_rawhi),
         .trng_bit(trng_bit),
+        .analog_status(analog_status),
+        .analog_measure(analog_measure),
         .ua(ua)
     );
+`else
+    assign analog_status = 8'h00;
+    assign analog_measure = 8'h00;
 `endif /* ANALOG_ENABLED */
 
 /*
@@ -5686,7 +5784,9 @@ endmodule /* tt_um_main */
      *
      * Note the ice40 TT Demoboard build uses this path with `tt_fpga.py harden` */
 /* local include expanded by tools/build_custom_gds_verilog.py */
+    `ifdef JTAG_ENABLED
 /* local include expanded by tools/build_custom_gds_verilog.py */
+    `endif
 /* local include expanded by tools/build_custom_gds_verilog.py */
 /* local include expanded by tools/build_custom_gds_verilog.py */
 /* local include expanded by tools/build_custom_gds_verilog.py */

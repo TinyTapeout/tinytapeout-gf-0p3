@@ -1,9 +1,9 @@
 # Tiny Tapeout project information
 project:
-  title:        "GF180 Analog with ua Entropy Explorer: UART/SPI TRNG and PUF"      # Project title
+  title:        "Hardware Entropy Explorer: UART/SPI TRNG and PUF (Analog)"      # Project title
   author:       "gojimmypi"      # Your name
   discord:      "gojimmypi"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "UART/SPI-controlled GF180 analog lab for DAC, comparator, oscillator, TRNG, and PUF-style entropy experiments."      # One line description of what your project does
+  description:  "UART/SPI-controlled GF180 analog lab with DAC, threshold sampling, TRNG monitors, and measured ua5 passive probe."      # One line description of what your project does
   language:     "Analog"        # other examples include Verilog, Amaranth, VHDL, etc
   clock_hz:     25000000         # Clock frequency in Hz (or 0 if not applicable); note tests such as ULX3S can specify 50MHz
 
@@ -63,7 +63,7 @@ pinout:
   ua[2]: "cmp_ref_ext"         # External comparator/reference input
   ua[3]: "amon_out"            # Analog monitor mux output
   ua[4]: "osc_out"             # Oscillator monitor output
-  ua[5]: "puf_probe"           # PUF/noise probe pad
+  ua[5]: "puf_probe"           # PUF/noise probe pad with measured on-chip Metal4 passive
 
 # Do not change!
 yaml_version: 6
