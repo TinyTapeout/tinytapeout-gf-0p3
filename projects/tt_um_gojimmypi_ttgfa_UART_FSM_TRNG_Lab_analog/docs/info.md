@@ -11,7 +11,7 @@ Ensure full URL paths are included for files outside this directory, as the full
 
 ## How it works
 
-This is the experimental project version that enables `ua[0..5]`.
+This is the experimental analog project version that enables `ua[0..5]`.
 
 A [ring oscillator](https://en.wikipedia.org/wiki/Ring_oscillator) is implemented at the core of this project as an 
 [entropy](https://en.wikipedia.org/wiki/Entropy) source for a TRNG (True [Hardware Random Number Generator](https://en.wikipedia.org/wiki/Hardware_random_number_generator)).
@@ -764,7 +764,7 @@ cd test-hw
 ## UART FSM TRNG Lab Datasheet
 
 Document revision: 1.1.0
-RTL revision string: `Version 1.1.5 7/1/2026`  
+RTL revision string: `Version 1.2.5 7/2/2026`  
 Project family: Tiny Tapeout UART/SPI configurable TRNG experiment  
 Primary top modules: `tt_um_gojimmypi_ttgfa_UART_FSM_TRNG_Lab` (conditional based on build)
 License: Apache-2.0, as declared in the source files
@@ -987,7 +987,7 @@ Invalid syntax returns `?<CR>`.
 #### UART command examples
 
 ```text
-V<CR>       -> Version 1.1.5 7/1/2026<CR>
+V<CR>       -> Version 1.2.5 7/2/2026<CR>
 R2<CR>      -> R2=10<CR>
 E1<CR>      -> OK<CR>
 D10<CR>     -> OK<CR>
