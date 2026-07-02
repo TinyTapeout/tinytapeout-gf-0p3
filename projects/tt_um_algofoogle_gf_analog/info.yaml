@@ -31,7 +31,7 @@ pinout:
   ui[3]: "dac_load"
   ui[4]: "dac_shift"
   ui[5]: "vco_disable"
-  ui[6]: ""
+  ui[6]: "test_mode"
   ui[7]: "vga_mode"
 
   # Outputs -- Tiny VGA PMOD:
