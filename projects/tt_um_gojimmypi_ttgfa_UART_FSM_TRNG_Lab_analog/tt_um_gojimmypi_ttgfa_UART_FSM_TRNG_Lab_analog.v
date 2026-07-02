@@ -68,7 +68,7 @@
     `ifdef USE_LONG_STRINGS
         /* GF 0p3 analog experiment build. */
         `define VERSION_STRING_LEN 22 /* 1234567890123456789012 */
-        `define VERSION_STRING          "Version 1.1.5 7/1/2026"
+        `define VERSION_STRING          "Version 1.2.5 7/2/2026"
         /* GF 0p3 deadline: July 3, 1:00PM PDT */
     `else
         /* no long strings */
@@ -2031,15 +2031,15 @@ endmodule
  * - Bxy<CR>    : stream xy raw bytes, waiting for a fresh TRNG sample before each byte.
  * - Cxy<CR>    : Cxy: stream xy conditioned bytes, waiting for a fresh TRNG sample before each byte.
  * - U3<CR>     : select 921600 UART baud after OK<CR> completes.
- * - V<CR>      : replies Version 1.1.5 7/1/2026<CR>
- * - RD<CR>     : Replies with Build Target ID. 85 == ULX3S, 42 == target GF180
+ * - V<CR>      : replies Version 1.2.5 7/2/2026<CR>
+ * - RD<CR>     : Replies with Build Target ID. 8B == TT demoboard FPGA analog, 4A == GF180 analog
  * - RE<CR>     : read analog pad status
  * - RF<CR>     : read ua[5] passive-structure threshold/decay timing sample
  *
  * Reply format:
  * - Successful write: OK<CR>
  * - Successful read : Rn=HH<CR>
- * - Version query   : Version 1.1.5 7/1/2026<CR>
+ * - Version query   : Version 1.2.5 7/2/2026<CR>
  * - Parse/error     : ?<CR>
  */
 `default_nettype none
@@ -2163,6 +2163,7 @@ module trng_cfg_ascii_core
      * 0x4n: ASIC / PDK-class builds
      * - 41: ASIC SKY130 detected by project wrapper
      * - 42: ASIC GF180 detected by project wrapper
+     * - 4A: ASIC GF180 analog experiment build
      * - 43: ASIC/PDK detected by project wrapper, unknown PDK flavor
      * - 44: SKY130 PDK fallback only
      * - 45: GF180 PDK fallback only
@@ -2176,6 +2177,7 @@ module trng_cfg_ascii_core
      * - 88: explicit FPGA ULX3S 12K target define
      * - 89: explicit FPGA ULX3S 85F target define
      * - 8A: non-ASIC build, assumed TT FPGA demoboard
+     * - 8B: non-ASIC analog experiment build, assumed TT FPGA demoboard
      * - 8E: generic FPGA target define
      *
      * 0xFn: simulation/test
@@ -2188,7 +2190,11 @@ module trng_cfg_ascii_core
         localparam [7:0] BUILD_TARGET_ID = 8'h41;
     `elsif FOUND_TT_PDK_GF180
         /* GF180 PDK Detected for ASIC Build */
-        localparam [7:0] BUILD_TARGET_ID = 8'h42;
+        `ifdef ANALOG_ENABLED
+            localparam [7:0] BUILD_TARGET_ID = 8'h4A;
+        `else
+            localparam [7:0] BUILD_TARGET_ID = 8'h42;
+        `endif
     `elsif FOUND_TT_PDK
         /* PDH but not SKY130, not GF130 ? Probably not good */
         localparam [7:0] BUILD_TARGET_ID = 8'h43;
@@ -2219,7 +2225,11 @@ module trng_cfg_ascii_core
     /* We don't really know how to detect TT Demoboard */
     `elsif TT_NON_ASIC_BUILD
         /* We'll assume this is the FPGA Demoboard. See project.v  */
-        localparam [7:0] BUILD_TARGET_ID = 8'h8A;
+        `ifdef ANALOG_ENABLED
+            localparam [7:0] BUILD_TARGET_ID = 8'h8B;
+        `else
+            localparam [7:0] BUILD_TARGET_ID = 8'h8A;
+        `endif
 
 
     /* Simulation */
@@ -3498,12 +3508,26 @@ module analog_experiment_stub
 
     assign analog_measure = probe_decay_q;
 
+`ifdef ULX3S
+    /*
+     * The ULX3S analog pins are internal-only in top_ulx3s.v.
+     * Avoid internal tri-state drivers so the strict build-log scan
+     * does not fail on Yosys limited tri-state warnings.
+     */
+    assign ua[0] = 1'b0;
+    assign ua[1] = dac_pin_oe ? dac_pin_out : 1'b0;
+    assign ua[2] = 1'b0;
+    assign ua[3] = amon_pin_oe ? amon_pin_out : 1'b0;
+    assign ua[4] = osc_pin_oe ? osc_pin_out : 1'b0;
+    assign ua[5] = (probe_pin_enable & probe_drive_oe_q) ? probe_drive_q : 1'b0;
+`else
     assign ua[0] = 1'bz;
     assign ua[1] = dac_pin_oe ? dac_pin_out : 1'bz;
     assign ua[2] = 1'bz;
     assign ua[3] = amon_pin_oe ? amon_pin_out : 1'bz;
     assign ua[4] = osc_pin_oe ? osc_pin_out : 1'bz;
     assign ua[5] = (probe_pin_enable & probe_drive_oe_q) ? probe_drive_q : 1'bz;
+`endif
 
     wire [1:0] unused_ua;
     assign unused_ua = ua[7:6];
