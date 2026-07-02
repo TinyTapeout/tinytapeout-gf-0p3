@@ -158,6 +158,7 @@ MACRO tt_um_algofoogle_gf_analog
   PIN ui_in[6]
     DIRECTION INPUT ;
     USE SIGNAL ;
+    ANTENNAGATEAREA 0.396000 ;
     PORT
       LAYER Metal4 ;
         RECT 272.850 324.360 273.150 325.360 ;
