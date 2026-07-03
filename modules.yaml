@@ -20,6 +20,30 @@ modules:
       3: 10
       4: 9
       5: 8
+  # Lock to control high-speed pins
+  - name: 'mcml_vco'
+    mux_id: 14
+    blk_id: 6
+    width: 1
+    height: 2
+    pg_vaa: false
+    analog:
+      0: 0
+      1: 5
+      2: 2
+      3: 3
+      4: 1
+      5: 4
+  - name: 'tnt_gf_vco'
+    mux_id: 8
+    blk_id: 6
+    width: 1
+    height: 2
+    pg_vaa: false
+    analog:
+      0: 18
+      1: 19
+      2: 20
   # Art containing modules that needs to be carefully placed so they don't get flipped/mirrored:
   - name: 'oscillating_bones'
     mux_id: 9
