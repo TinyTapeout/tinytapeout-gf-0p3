@@ -13,3 +13,6 @@
 #    level: medium
 #    reason: 'The project shorts the power rails when the "addi x0, x0, 0xdeadbeef" instruction is executed.'
 # ```
+tt_um_fabulous_gf_0p3_3v3:
+    level: high
+    reason: 'Uses a broken version of the 3v3 SCL that has a short in buf_8'
